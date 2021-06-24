@@ -66,8 +66,11 @@ public class MainActivity extends AppCompatActivity {
 
         database= FirebaseDatabase.getInstance();
         users = new ArrayList<>();
+        usersAdapter = new UsersAdapter(this, users);
+        binding.recyclerView.setAdapter(usersAdapter);
         userStatuses = new ArrayList<>();
         currentUserId = FirebaseAuth.getInstance().getUid();;
+
         database.getReference().child("users").child(FirebaseAuth.getInstance().getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -81,33 +84,27 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        usersAdapter = new UsersAdapter(this, users);
+
         statusAdapter = new TopStatusAdapter(this,userStatuses);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(RecyclerView.HORIZONTAL);
         binding.statusList.setLayoutManager(layoutManager);
         binding.statusList.setAdapter(statusAdapter);
-        binding.recyclerView.setAdapter(usersAdapter);
+
 
         database.getReference().child("users").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull  DataSnapshot snapshot) {
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                 users.clear();
-                for(DataSnapshot snapshot1 : snapshot.getChildren()){
+                for(DataSnapshot snapshot1: snapshot.getChildren()){
                     User user = snapshot1.getValue(User.class);
-                    if(user.getUserId()==currentUserId){
-                        continue;
-                    }
-                    //Toast.makeText(MainActivity.this, user.getProfileImage(), Toast.LENGTH_SHORT).show();
-                    if(user!=null) {
-                        users.add(user);
-                    }
+                    users.add(user);
                 }
                 usersAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onCancelled(@NonNull  DatabaseError error) {
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
 
             }
         });

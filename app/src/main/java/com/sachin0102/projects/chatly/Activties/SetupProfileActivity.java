@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -60,7 +59,6 @@ public class SetupProfileActivity extends AppCompatActivity {
         binding.profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 InputMethodManager manager  = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 Intent intent = new Intent();
@@ -74,13 +72,13 @@ public class SetupProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = binding.namebox.getText().toString();
-                if(TextUtils.isEmpty(name))
-                {
+
+                if(name.isEmpty()){
                     binding.namebox.setError("Please type a name");
                     return;
                 }
-                dialog.show();
-                if(selectedImage!=null){
+                if (selectedImage != null) {
+                    dialog.show();
                     StorageReference reference = storage.getReference().child("Profiles").child(auth.getUid());
                     reference.putFile(selectedImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -90,12 +88,10 @@ public class SetupProfileActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         String imageUrl = uri.toString();
-                                        String uid = auth.getUid();
+                                        String uid= auth.getUid();
                                         String phone = auth.getCurrentUser().getPhoneNumber();
-
-
-                                        User user = new User(uid,name,phone, imageUrl);
-
+                                        String name = binding.namebox.getText().toString();
+                                        User user = new User(uid,name,phone,imageUrl);
                                         database.getReference()
                                                 .child("users")
                                                 .child(uid)
@@ -117,13 +113,9 @@ public class SetupProfileActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    String uid = auth.getUid();
+                    String uid= auth.getUid();
                     String phone = auth.getCurrentUser().getPhoneNumber();
-
-
-                    User user = new User(uid, name, phone, "No Image");
-
-
+                    User user = new User(uid,name,phone,"No image");
                     database.getReference()
                             .child("users")
                             .child(uid)
@@ -131,13 +123,13 @@ public class SetupProfileActivity extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
-                                    dialog.dismiss();
                                     Intent intent = new Intent(SetupProfileActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
                             });
                 }
+
             }
         });
 
@@ -147,9 +139,9 @@ public class SetupProfileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(data!=null)
-        {
-            if(data.getData()!=null){
+        if(data!=null){
+            if(data.getData()!=null)
+            {
                 binding.profileImageView.setImageURI(data.getData());
                 selectedImage = data.getData();
             }

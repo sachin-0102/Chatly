@@ -28,25 +28,22 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
 
     Context context;
     ArrayList<User> users;
-    public UsersAdapter( Context context, ArrayList<User> users){
+
+    public UsersAdapter(Context context, ArrayList<User> users){
         this.context = context;
-        this.users=users ;
+        this.users = users;
     }
-
-
     @NonNull
     @NotNull
     @Override
     public UsersViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.row_conversation,parent,false);
-
         return new UsersViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UsersViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull @NotNull UsersViewHolder holder, int position) {
         User user = users.get(position);
-
         String senderId = FirebaseAuth.getInstance().getUid();
 
         String senderRoom = senderId + user.getUserId();
@@ -74,26 +71,26 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
                     }
                 });
         holder.binding.username.setText(user.getName());
+
         Glide.with(context).load(user.getProfileImage())
                 .placeholder(R.drawable.avatar)
                 .into(holder.binding.profile);
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChatActivity.class);
-                intent.putExtra("name", user.getName());
+                intent.putExtra("name",user.getName());
                 intent.putExtra("uid", user.getUserId());
                 context.startActivity(intent);
             }
         });
     }
 
-
     @Override
     public int getItemCount() {
         return users.size();
     }
+
 
     public class UsersViewHolder extends RecyclerView.ViewHolder{
 
